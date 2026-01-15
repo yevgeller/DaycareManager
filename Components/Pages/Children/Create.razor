@@ -1,0 +1,53 @@
+@page "/children/create"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Child</PageTitle>
+
+<h1>Create Child</h1>
+
+<h4>Child</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="Child" OnValidSubmit="AddChild" FormName="createChild" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            
+            <div class="mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <InputText id="firstName" class="form-control" @bind-Value="Child.FirstName" />
+                <ValidationMessage For="() => Child.FirstName" class="text-danger" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <InputText id="lastName" class="form-control" @bind-Value="Child.LastName" />
+                <ValidationMessage For="() => Child.LastName" class="text-danger" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="dob" class="form-label">Date of Birth</label>
+                <InputDate id="dob" class="form-control" @bind-Value="Child.DateOfBirth" />
+                <ValidationMessage For="() => Child.DateOfBirth" class="text-danger" />
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create</button> 
+            <a href="/children" class="btn btn-secondary">Back to List</a>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    public Child Child { get; set; } = new();
+
+    private async Task AddChild()
+    {
+        DbContext.Children.Add(Child);
+        await DbContext.SaveChangesAsync();
+        NavigationManager.NavigateTo("/children");
+    }
+}

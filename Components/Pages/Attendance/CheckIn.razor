@@ -1,0 +1,96 @@
+@page "/attendance/checkin"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+
+<PageTitle>Check-In / Check-Out</PageTitle>
+
+<h1>Daily Attendance</h1>
+
+@if (children == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        @foreach (var child in children)
+        {
+            var todayAttendance = childAttendance?.FirstOrDefault(a => a.ChildId == child.Id);
+            var isCheckedIn = todayAttendance != null && todayAttendance.CheckOutTime == null;
+            var isCheckedOut = todayAttendance != null && todayAttendance.CheckOutTime != null;
+
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@child.FirstName @child.LastName</h5>
+                        
+                        @if (isCheckedIn)
+                        {
+                            <p class="text-success">Checked In at @todayAttendance!.CheckInTime.ToShortTimeString()</p>
+                            <button class="btn btn-warning" @onclick="() => CheckOut(child.Id)">Check Out</button>
+                        }
+                        else if (isCheckedOut)
+                        {
+                             <p class="text-muted">Checked Out at @todayAttendance!.CheckOutTime!.Value.ToShortTimeString()</p>
+                             <button class="btn btn-primary" disabled>Complete</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success" @onclick="() => CheckInChild(child.Id)">Check In</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Child>? children;
+    private List<Attendance>? childAttendance;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        children = await DbContext.Children.ToListAsync();
+        
+        var today = DateTime.Today;
+        childAttendance = await DbContext.Attendances
+            .Where(a => a.CheckInTime >= today)
+            .ToListAsync();
+    }
+
+    private async Task CheckInChild(int childId)
+    {
+        var attendance = new Attendance
+        {
+            ChildId = childId,
+            CheckInTime = DateTime.Now
+        };
+
+        DbContext.Attendances.Add(attendance);
+        await DbContext.SaveChangesAsync();
+        await LoadData();
+    }
+
+    private async Task CheckOut(int childId)
+    {
+        var today = DateTime.Today;
+        var attendance = await DbContext.Attendances
+            .Where(a => a.ChildId == childId && a.CheckInTime >= today && a.CheckOutTime == null)
+            .FirstOrDefaultAsync();
+
+        if (attendance != null)
+        {
+            attendance.CheckOutTime = DateTime.Now;
+            await DbContext.SaveChangesAsync();
+            await LoadData();
+        }
+    }
+}

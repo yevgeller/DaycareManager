@@ -1,0 +1,70 @@
+@page "/children/details/{id:int}"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Child Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Child</h4>
+    <hr />
+    @if (child is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <dl class="row">
+            <dt class="col-sm-2">First Name</dt>
+            <dd class="col-sm-10">@child.FirstName</dd>
+            
+            <dt class="col-sm-2">Last Name</dt>
+            <dd class="col-sm-10">@child.LastName</dd>
+            
+            <dt class="col-sm-2">Date of Birth</dt>
+            <dd class="col-sm-10">@child.DateOfBirth.ToShortDateString()</dd>
+            
+            <dt class="col-sm-2">Parents</dt>
+            <dd class="col-sm-10">
+                @if (child.Parents != null && child.Parents.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var parent in child.Parents)
+                        {
+                            <li>@parent.FirstName @parent.LastName (@parent.PhoneNumber)</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    @("-")
+                }
+            </dd>
+        </dl>
+        <div>
+            <a href="@($"/children/edit/{child.Id}")">Edit</a> |
+            <a href="/children">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Child? child;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        child = await DbContext.Children.Include(c => c.Parents).FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (child is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

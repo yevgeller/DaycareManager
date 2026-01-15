@@ -1,0 +1,99 @@
+@page "/classrooms/edit/{id:int}"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Classroom</PageTitle>
+
+<h1>Edit Classroom</h1>
+
+<h4>Classroom</h4>
+<hr />
+@if (Classroom is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="Classroom" OnValidSubmit="UpdateClassroom" FormName="editClassroom" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+                <InputNumber @bind-Value="Classroom.Id" hidden />
+                
+                <div class="mb-3">
+                    <label for="number" class="form-label">Classroom Number/Name</label>
+                    <InputText id="number" class="form-control" @bind-Value="Classroom.ClassroomNumber" />
+                    <ValidationMessage For="() => Classroom.ClassroomNumber" class="text-danger" />
+                </div>
+                
+                <div class="mb-3">
+                    <label for="minAge" class="form-label">Min Age (Months)</label>
+                    <InputNumber id="minAge" class="form-control" @bind-Value="Classroom.MinAgeMonths" />
+                    <ValidationMessage For="() => Classroom.MinAgeMonths" class="text-danger" />
+                </div>
+                
+                <div class="mb-3">
+                    <label for="maxAge" class="form-label">Max Age (Months)</label>
+                    <InputNumber id="maxAge" class="form-control" @bind-Value="Classroom.MaxAgeMonths" />
+                    <ValidationMessage For="() => Classroom.MaxAgeMonths" class="text-danger" />
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="/classrooms" class="btn btn-secondary">Back to List</a>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Classroom? Classroom { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Classroom is null)
+        {
+            Classroom = await DbContext.Classrooms.FirstOrDefaultAsync(m => m.Id == Id);
+
+            if (Classroom is null)
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+        }
+    }
+
+    private async Task UpdateClassroom()
+    {
+        DbContext.Attach(Classroom!).State = EntityState.Modified;
+
+        try
+        {
+            await DbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ClassroomExists(Classroom!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/classrooms");
+    }
+
+    private bool ClassroomExists(int id)
+    {
+        return DbContext.Classrooms.Any(e => e.Id == id);
+    }
+}

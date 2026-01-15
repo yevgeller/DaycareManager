@@ -1,0 +1,54 @@
+@page "/classrooms"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+
+<PageTitle>Classrooms</PageTitle>
+
+<h1>Classrooms</h1>
+
+<p>
+    <a href="/classrooms/create">Create New</a>
+</p>
+
+@if (classrooms == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Classroom Number</th>
+                <th>Min Age (Months)</th>
+                <th>Max Age (Months)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var classroom in classrooms)
+            {
+                <tr>
+                    <td>@classroom.ClassroomNumber</td>
+                    <td>@classroom.MinAgeMonths</td>
+                    <td>@classroom.MaxAgeMonths</td>
+                    <td>
+                        <a href="@($"/classrooms/edit/{classroom.Id}")">Edit</a>
+                        <!-- Delete not exposed for classrooms to prevent accidental data issues with children -->
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Classroom>? classrooms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        classrooms = await DbContext.Classrooms.ToListAsync();
+    }
+}

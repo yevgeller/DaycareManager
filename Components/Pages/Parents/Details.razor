@@ -1,0 +1,73 @@
+@page "/parents/details/{id:int}"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Parent Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Parent</h4>
+    <hr />
+    @if (parent is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <dl class="row">
+            <dt class="col-sm-2">First Name</dt>
+            <dd class="col-sm-10">@parent.FirstName</dd>
+            
+            <dt class="col-sm-2">Last Name</dt>
+            <dd class="col-sm-10">@parent.LastName</dd>
+            
+            <dt class="col-sm-2">Phone</dt>
+            <dd class="col-sm-10">@parent.PhoneNumber</dd>
+
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@parent.Email</dd>
+            
+            <dt class="col-sm-2">Children</dt>
+            <dd class="col-sm-10">
+                @if (parent.Children != null && parent.Children.Any())
+                {
+                    <ul>
+                        @foreach (var child in parent.Children)
+                        {
+                            <li>@child.FirstName @child.LastName (@child.DateOfBirth.ToShortDateString())</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    @("-")
+                }
+            </dd>
+        </dl>
+        <div>
+            <a href="@($"/parents/edit/{parent.Id}")">Edit</a> |
+            <a href="/parents">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Parent? parent;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        parent = await DbContext.Parents.Include(p => p.Children).FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (parent is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

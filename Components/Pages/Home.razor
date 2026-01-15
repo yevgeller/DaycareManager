@@ -1,0 +1,51 @@
+﻿@page "/"
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1>Daycare Manager</h1>
+<p class="lead">Welcome to the Daycare Management System.</p>
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Children</h5>
+                <p class="card-text">Manage enrollment, view profiles, and edit details.</p>
+                <a href="/children" class="btn btn-primary">Manage Children</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Parents</h5>
+                <p class="card-text">View parent contact info and family associations.</p>
+                <a href="/parents" class="btn btn-primary">Manage Parents</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">Classrooms</h5>
+                <p class="card-text">Configure classrooms and age ranges.</p>
+                <a href="/classrooms" class="btn btn-primary">Manage Classrooms</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quick Actions</h5>
+                <a href="/attendance/checkin" class="btn btn-outline-success me-2">Check In/Out</a>
+                <a href="/children/create" class="btn btn-outline-primary me-2">Register Child</a>
+                <a href="/parents/create" class="btn btn-outline-secondary">Add Parent</a>
+            </div>
+        </div>
+    </div>
+</div>

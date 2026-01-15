@@ -1,0 +1,59 @@
+@page "/parents/create"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create Parent</PageTitle>
+
+<h1>Create Parent</h1>
+
+<h4>Parent</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="Parent" OnValidSubmit="AddParent" FormName="createParent" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            
+            <div class="mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <InputText id="firstName" class="form-control" @bind-Value="Parent.FirstName" />
+                <ValidationMessage For="() => Parent.FirstName" class="text-danger" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <InputText id="lastName" class="form-control" @bind-Value="Parent.LastName" />
+                <ValidationMessage For="() => Parent.LastName" class="text-danger" />
+            </div>
+            
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <InputText id="phone" class="form-control" @bind-Value="Parent.PhoneNumber" />
+                <ValidationMessage For="() => Parent.PhoneNumber" class="text-danger" />
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="Parent.Email" />
+                <ValidationMessage For="() => Parent.Email" class="text-danger" />
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create</button> 
+            <a href="/parents" class="btn btn-secondary">Back to List</a>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    public Parent Parent { get; set; } = new();
+
+    private async Task AddParent()
+    {
+        DbContext.Parents.Add(Parent);
+        await DbContext.SaveChangesAsync();
+        NavigationManager.NavigateTo("/parents");
+    }
+}

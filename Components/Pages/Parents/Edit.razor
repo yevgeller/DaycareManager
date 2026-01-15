@@ -1,0 +1,105 @@
+@page "/parents/edit/{id:int}"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Parent</PageTitle>
+
+<h1>Edit Parent</h1>
+
+<h4>Parent</h4>
+<hr />
+@if (Parent is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="Parent" OnValidSubmit="UpdateParent" FormName="editParent" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+                <InputNumber @bind-Value="Parent.Id" hidden />
+                
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <InputText id="firstName" class="form-control" @bind-Value="Parent.FirstName" />
+                    <ValidationMessage For="() => Parent.FirstName" class="text-danger" />
+                </div>
+                
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <InputText id="lastName" class="form-control" @bind-Value="Parent.LastName" />
+                    <ValidationMessage For="() => Parent.LastName" class="text-danger" />
+                </div>
+                
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <InputText id="phone" class="form-control" @bind-Value="Parent.PhoneNumber" />
+                    <ValidationMessage For="() => Parent.PhoneNumber" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <InputText id="email" class="form-control" @bind-Value="Parent.Email" />
+                    <ValidationMessage For="() => Parent.Email" class="text-danger" />
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="/parents" class="btn btn-secondary">Back to List</a>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Parent? Parent { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Parent is null)
+        {
+            Parent = await DbContext.Parents.FirstOrDefaultAsync(m => m.Id == Id);
+
+            if (Parent is null)
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+        }
+    }
+
+    private async Task UpdateParent()
+    {
+        DbContext.Attach(Parent!).State = EntityState.Modified;
+
+        try
+        {
+            await DbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ParentExists(Parent!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/parents");
+    }
+
+    private bool ParentExists(int id)
+    {
+        return DbContext.Parents.Any(e => e.Id == id);
+    }
+}

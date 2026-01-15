@@ -1,0 +1,99 @@
+@page "/children/edit/{id:int}"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Child</PageTitle>
+
+<h1>Edit Child</h1>
+
+<h4>Child</h4>
+<hr />
+@if (Child is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="Child" OnValidSubmit="UpdateChild" FormName="editChild" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+                <InputNumber @bind-Value="Child.Id" hidden />
+                
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <InputText id="firstName" class="form-control" @bind-Value="Child.FirstName" />
+                    <ValidationMessage For="() => Child.FirstName" class="text-danger" />
+                </div>
+                
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <InputText id="lastName" class="form-control" @bind-Value="Child.LastName" />
+                    <ValidationMessage For="() => Child.LastName" class="text-danger" />
+                </div>
+                
+                <div class="mb-3">
+                    <label for="dob" class="form-label">Date of Birth</label>
+                    <InputDate id="dob" class="form-control" @bind-Value="Child.DateOfBirth" />
+                    <ValidationMessage For="() => Child.DateOfBirth" class="text-danger" />
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="/children" class="btn btn-secondary">Back to List</a>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Child? Child { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Child is null)
+        {
+            Child = await DbContext.Children.FirstOrDefaultAsync(m => m.Id == Id);
+
+            if (Child is null)
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+        }
+    }
+
+    private async Task UpdateChild()
+    {
+        DbContext.Attach(Child!).State = EntityState.Modified;
+
+        try
+        {
+            await DbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ChildExists(Child!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/children");
+    }
+
+    private bool ChildExists(int id)
+    {
+        return DbContext.Children.Any(e => e.Id == id);
+    }
+}

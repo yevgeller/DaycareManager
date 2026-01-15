@@ -1,0 +1,59 @@
+@page "/parents"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+
+<PageTitle>Parents</PageTitle>
+
+<h1>Parents</h1>
+
+<p>
+    <a href="/parents/create">Create New</a>
+</p>
+
+@if (parents == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Children</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var parent in parents)
+            {
+                <tr>
+                    <td>@parent.FirstName</td>
+                    <td>@parent.LastName</td>
+                    <td>@parent.PhoneNumber</td>
+                    <td>@parent.Email</td>
+                    <td>@parent.Children.Count</td>
+                    <td>
+                        <a href="@($"/parents/edit/{parent.Id}")">Edit</a> |
+                        <a href="@($"/parents/details/{parent.Id}")">Details</a> |
+                        <a href="@($"/parents/delete/{parent.Id}")">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Parent>? parents;
+
+    protected override async Task OnInitializedAsync()
+    {
+        parents = await DbContext.Parents.Include(p => p.Children).ToListAsync();
+    }
+}

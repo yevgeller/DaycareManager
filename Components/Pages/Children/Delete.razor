@@ -1,0 +1,65 @@
+@page "/children/delete/{id:int}"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete Child</PageTitle>
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Child</h4>
+    <hr />
+    @if (child is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <dl class="row">
+            <dt class="col-sm-2">First Name</dt>
+            <dd class="col-sm-10">@child.FirstName</dd>
+
+            <dt class="col-sm-2">Last Name</dt>
+            <dd class="col-sm-10">@child.LastName</dd>
+
+            <dt class="col-sm-2">Date of Birth</dt>
+            <dd class="col-sm-10">@child.DateOfBirth.ToShortDateString()</dd>
+        </dl>
+        <EditForm Model="child" OnValidSubmit="DeleteChild" FormName="deleteChild" Enhance>
+            <button type="submit" class="btn btn-danger">Delete</button> |
+            <a href="/children">Back to List</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private Child? child;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        child = await DbContext.Children.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (child is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteChild()
+    {
+        if (child != null)
+        {
+            DbContext.Children.Remove(child);
+            await DbContext.SaveChangesAsync();
+        }
+
+        NavigationManager.NavigateTo("/children");
+    }
+}

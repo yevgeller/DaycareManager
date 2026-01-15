@@ -1,0 +1,67 @@
+@page "/children"
+@using DaycareManager.Models
+@using DaycareManager.Data
+@using Microsoft.EntityFrameworkCore
+@inject DaycareDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<PageTitle>Children</PageTitle>
+
+<h1>Children</h1>
+
+<p>
+    <a href="/children/create">Create New</a>
+</p>
+
+@if (children == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Date of Birth</th>
+                <th>Parents</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var child in children)
+            {
+                <tr>
+                    <td>@child.FirstName</td>
+                    <td>@child.LastName</td>
+                    <td>@child.DateOfBirth.ToShortDateString()</td>
+                    <td>
+                        @if (child.Parents != null && child.Parents.Any())
+                        {
+                            @string.Join(", ", child.Parents.Select(p => $"{p.FirstName} {p.LastName}"))
+                        }
+                        else
+                        {
+                            @("-")
+                        }
+                    </td>
+                    <td>
+                        <a href="@($"/children/edit/{child.Id}")">Edit</a> |
+                        <a href="@($"/children/details/{child.Id}")">Details</a> |
+                        <a href="@($"/children/delete/{child.Id}")">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Child>? children;
+
+    protected override async Task OnInitializedAsync()
+    {
+        children = await DbContext.Children.Include(c => c.Parents).ToListAsync();
+    }
+}

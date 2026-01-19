@@ -3,10 +3,11 @@
 @using DaycareManager.Data
 @using Microsoft.EntityFrameworkCore
 @inject DaycareDbContext DbContext
+@rendermode InteractiveServer
 
 <PageTitle>Check-In / Check-Out</PageTitle>
 
-<h1>Daily Attendance</h1>
+<h1>Dailyy Attendance</h1>
 
 @if (children == null)
 {
@@ -38,7 +39,9 @@ else
                         }
                         else
                         {
-                            <button class="btn btn-success" @onclick="() => CheckInChild(child.Id)">Check In</button>
+                            <span>@child.Id</span>
+                            <span>- @child.FirstName @child.LastName</span>
+                           <button class="btn btn-success" @onclick="() => CheckInChild(child.Id)">Check In..</button>
                         }
                     </div>
                 </div>

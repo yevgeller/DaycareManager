@@ -7,7 +7,8 @@
 
 <PageTitle>Check-In / Check-Out</PageTitle>
 
-<h1>Dailyy Attendance</h1>
+<h1>Daily Attendance</h1>
+<h3>@DateTime.Today.ToString("D")</h3>
 
 @if (children == null)
 {
@@ -18,9 +19,9 @@ else
     <div class="row">
         @foreach (var child in children)
         {
-            var todayAttendance = childAttendance?.FirstOrDefault(a => a.ChildId == child.Id);
-            var isCheckedIn = todayAttendance != null && todayAttendance.CheckOutTime == null;
-            var isCheckedOut = todayAttendance != null && todayAttendance.CheckOutTime != null;
+            var myAttendances = childAttendance?.Where(a => a.ChildId == child.Id).OrderBy(a => a.CheckInTime).ToList();
+            var lastAttendance = myAttendances?.LastOrDefault();
+            var isCheckedIn = lastAttendance != null && lastAttendance.CheckOutTime == null;
 
             <div class="col-md-4 mb-3">
                 <div class="card">
@@ -29,19 +30,30 @@ else
                         
                         @if (isCheckedIn)
                         {
-                            <p class="text-success">Checked In at @todayAttendance!.CheckInTime.ToShortTimeString()</p>
-                            <button class="btn btn-warning" @onclick="() => CheckOut(child.Id)">Check Out</button>
-                        }
-                        else if (isCheckedOut)
-                        {
-                             <p class="text-muted">Checked Out at @todayAttendance!.CheckOutTime!.Value.ToShortTimeString()</p>
-                             <button class="btn btn-primary" disabled>Complete</button>
+                            <button class="btn btn-warning mb-2" @onclick="() => CheckOut(child.Id)">Check Out</button>
                         }
                         else
                         {
-                            <span>@child.Id</span>
-                            <span>- @child.FirstName @child.LastName</span>
-                           <button class="btn btn-success" @onclick="() => CheckInChild(child.Id)">Check In..</button>
+                            <button class="btn btn-success mb-2" @onclick="() => CheckInChild(child.Id)">Check In..</button>
+                        }
+
+                        @if (myAttendances != null && myAttendances.Any())
+                        {
+                            <ul class="list-group list-group-flush mt-2">
+                                @foreach (var att in myAttendances)
+                                {
+                                    <li class="list-group-item p-1">
+                                        <small>
+                                            <strong>In:</strong> @att.CheckInTime.ToShortTimeString()
+                                            <br />
+                                            @if (att.CheckOutTime != null)
+                                            {
+                                                <strong>Out:</strong> @att.CheckOutTime.Value.ToShortTimeString()
+                                            }
+                                        </small>
+                                    </li>
+                                }
+                            </ul>
                         }
                     </div>
                 </div>
@@ -85,8 +97,10 @@ else
     private async Task CheckOut(int childId)
     {
         var today = DateTime.Today;
+        // Get the latest open attendance record for today
         var attendance = await DbContext.Attendances
             .Where(a => a.ChildId == childId && a.CheckInTime >= today && a.CheckOutTime == null)
+            .OrderByDescending(a => a.CheckInTime)
             .FirstOrDefaultAsync();
 
         if (attendance != null)

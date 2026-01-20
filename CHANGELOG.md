@@ -6,3 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed the "Check In" button functionality by enabling `InteractiveServer` render mode on `CheckIn.razor`.
+
+### Added
+- Added current date to the "Daily Attendance" page header.
+- Implemented support for multiple check-in/out sessions per day.
+- Added attendance history display (In/Out times) to the Check-In card.

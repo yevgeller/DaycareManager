@@ -31,6 +31,8 @@ A web-based application for managing daycare operations, including child enrollm
 * **Requirements**:
     - Log when a child arrives (Check-in).
     - Log when a child leaves (Check-out).
+    - Support multiple check-in/out sessions per day.
+    - Display daily attendance history (In/Out times) for each child.
     - Maintain historical attendance records.
 
 ### 3.4 Classrooms

@@ -40,8 +40,10 @@ A web-based application for managing daycare operations, including child enrollm
     - Classroom Number/Name (e.g., "Infant 1")
     - Minimum Age (months)
     - Maximum Age (months)
+    - Capacity (Max children)
 * **Requirements**:
     - Manage classroom age ranges.
+    - Define maximum capacity per classroom.
     - Assign children to appropriate classrooms based on age.
 
 ## 4. User Interface Structure

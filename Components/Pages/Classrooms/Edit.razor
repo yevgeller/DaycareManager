@@ -41,6 +41,12 @@ else
                     <InputNumber id="maxAge" class="form-control" @bind-Value="Classroom.MaxAgeMonths" />
                     <ValidationMessage For="() => Classroom.MaxAgeMonths" class="text-danger" />
                 </div>
+
+                <div class="mb-3">
+                    <label for="capacity" class="form-label">Capacity</label>
+                    <InputNumber id="capacity" class="form-control" @bind-Value="Classroom.Capacity" />
+                    <ValidationMessage For="() => Classroom.Capacity" class="text-danger" />
+                </div>
                 
                 <button type="submit" class="btn btn-primary">Save</button>
                 <a href="/classrooms" class="btn btn-secondary">Back to List</a>

@@ -22,8 +22,9 @@ else
         <thead>
             <tr>
                 <th>Classroom Number</th>
-                <th>Min Age (Months)</th>
-                <th>Max Age (Months)</th>
+                <th>Min Age</th>
+                <th>Max Age</th>
+                <th>Capacity</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -34,6 +35,7 @@ else
                     <td>@classroom.ClassroomNumber</td>
                     <td>@classroom.MinAgeMonths</td>
                     <td>@classroom.MaxAgeMonths</td>
+                    <td>@classroom.Capacity</td>
                     <td>
                         <a href="@($"/classrooms/edit/{classroom.Id}")">Edit</a>
                         <!-- Delete not exposed for classrooms to prevent accidental data issues with children -->

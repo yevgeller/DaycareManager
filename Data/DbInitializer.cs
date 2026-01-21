@@ -17,11 +17,11 @@ public static class DbInitializer
 
         var classrooms = new Classroom[]
         {
-            new Classroom { ClassroomNumber = "Infant 1", MinAgeMonths = 0, MaxAgeMonths = 12 },
-            new Classroom { ClassroomNumber = "Toddler 1", MinAgeMonths = 13, MaxAgeMonths = 24 },
-            new Classroom { ClassroomNumber = "Toddler 2", MinAgeMonths = 25, MaxAgeMonths = 36 },
-            new Classroom { ClassroomNumber = "Pre-K 1", MinAgeMonths = 37, MaxAgeMonths = 48 },
-            new Classroom { ClassroomNumber = "Pre-K 2", MinAgeMonths = 49, MaxAgeMonths = 60 }
+            new Classroom { ClassroomNumber = "Infant 1", MinAgeMonths = 0, MaxAgeMonths = 12, Capacity = 10 },
+            new Classroom { ClassroomNumber = "Toddler 1", MinAgeMonths = 13, MaxAgeMonths = 24, Capacity = 12 },
+            new Classroom { ClassroomNumber = "Toddler 2", MinAgeMonths = 25, MaxAgeMonths = 36, Capacity = 12 },
+            new Classroom { ClassroomNumber = "Pre-K 1", MinAgeMonths = 37, MaxAgeMonths = 48, Capacity = 15 },
+            new Classroom { ClassroomNumber = "Pre-K 2", MinAgeMonths = 49, MaxAgeMonths = 60, Capacity = 15 }
         };
         context.Classrooms.AddRange(classrooms);
         context.SaveChanges();

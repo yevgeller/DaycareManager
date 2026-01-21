@@ -11,4 +11,7 @@ public class Classroom
 
     public int MinAgeMonths { get; set; }
     public int MaxAgeMonths { get; set; }
+
+    [Range(1, 100)]
+    public int Capacity { get; set; }
 }

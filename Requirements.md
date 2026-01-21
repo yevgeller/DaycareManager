@@ -17,6 +17,11 @@ A web-based application for managing daycare operations, including child enrollm
 * **Relationships**: 
     - Linked to multiple Parents (Many-to-Many).
     - Linked to a Classroom (via `ClassroomId`).
+* **Requirements**:
+    - Manage basic child information.
+    - Assign children to classrooms.
+    - Validate child age against classroom age range (warning only).
+    - Display detailed age information (years/months/days).
 
 ### 3.2 Parents
 * **Data**: First Name, Last Name, Phone Number (US format only, 555-xxx-xxxx), Email.

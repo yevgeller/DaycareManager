@@ -7,9 +7,14 @@
 
 <PageTitle>Edit Child</PageTitle>
 
-<h1>Edit Child</h1>
-
-<h4>Child</h4>
+@if (Child != null)
+{
+    <h3>Edit Child: @Child.LastName, @Child.FirstName</h3>
+}
+else
+{
+    <h3>Edit Child</h3>
+}
 <hr />
 @if (Child is null)
 {
@@ -41,6 +46,24 @@ else
                     <InputDate id="dob" class="form-control" @bind-Value="Child.DateOfBirth" />
                     <ValidationMessage For="() => Child.DateOfBirth" class="text-danger" />
                 </div>
+
+                <div class="mb-3">
+                    <label for="classroom" class="form-label">Classroom</label>
+                    <InputSelect id="classroom" class="form-control" @bind-Value="Child.ClassroomId">
+                        <option value="">-- Select Classroom --</option>
+                        @foreach (var classroom in Classrooms)
+                        {
+                            <option value="@classroom.Id">@classroom.ClassroomNumber (@classroom.MinAgeMonths - @classroom.MaxAgeMonths months)</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                 @if (ShowAgeWarning)
+                 {
+                     <div class="alert alert-warning" role="alert">
+                         <strong>Warning:</strong> The child's age (@AgeInMonths months) is outside the recommended range for this classroom (@SelectedClassroom?.MinAgeMonths - @SelectedClassroom?.MaxAgeMonths months).
+                     </div>
+                 }
                 
                 <button type="submit" class="btn btn-primary">Save</button>
                 <a href="/children" class="btn btn-secondary">Back to List</a>
@@ -56,8 +79,12 @@ else
     [SupplyParameterFromForm]
     public Child? Child { get; set; }
 
+    public List<Classroom> Classrooms { get; set; } = new();
+
     protected override async Task OnInitializedAsync()
     {
+        Classrooms = await DbContext.Classrooms.OrderBy(c => c.MinAgeMonths).ToListAsync();
+
         if (Child is null)
         {
             Child = await DbContext.Children.FirstOrDefaultAsync(m => m.Id == Id);
@@ -66,6 +93,26 @@ else
             {
                 NavigationManager.NavigateTo("notfound");
             }
+        }
+    }
+
+    private Classroom? SelectedClassroom => Classrooms.FirstOrDefault(c => c.Id == Child?.ClassroomId);
+
+    private int AgeInMonths
+    {
+        get 
+        {
+            if (Child is null) return 0;
+            return (int)((DateTime.Today - Child.DateOfBirth).TotalDays / 30.436875);
+        }
+    }
+
+    private bool ShowAgeWarning
+    {
+        get
+        {
+            if (Child?.ClassroomId is null || SelectedClassroom is null) return false;
+            return AgeInMonths < SelectedClassroom.MinAgeMonths || AgeInMonths > SelectedClassroom.MaxAgeMonths;
         }
     }
 

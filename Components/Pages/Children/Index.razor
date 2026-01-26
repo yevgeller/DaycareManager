@@ -24,6 +24,7 @@ else
             <tr>
                 <th>First Name</th>
                 <th>Last Name</th>
+                <th>Gender</th>
                 <th>Date of Birth</th>
                 <th>Parents</th>
                 <th>Actions</th>
@@ -35,6 +36,7 @@ else
                 <tr>
                     <td>@child.FirstName</td>
                     <td>@child.LastName</td>
+                    <td>@child.Gender</td>
                     <td>@child.DateOfBirth.ToShortDateString()</td>
                     <td>
                         @if (child.Parents != null && child.Parents.Any())

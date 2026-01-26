@@ -11,6 +11,8 @@ public class Child
     
     [Required]
     public string LastName { get; set; } = string.Empty;
+
+    public string Gender { get; set; } = string.Empty;
     
     public DateTime DateOfBirth { get; set; }
     

@@ -127,39 +127,52 @@ public static class DbInitializer
 
     private static Child CreateChild(int minAgeMonths, int maxAgeMonths, string lastName, List<Parent> parents, Classroom[] classrooms, Random random)
     {
-         // Name pools based on criteria
+        // Name pools based on criteria
         // Infant (0-12m): A-E
-        var namesAE_First = new[] { "Alice", "Aaron", "Bella", "Benjamin", "Charlie", "Chloe", "David", "Daisy", "Ethan", "Emma", "Austin", "Adam", "Eva", "Blake", "Caleb" };
+        var namesAE_Male = new[] { "Aaron", "Benjamin", "Charlie", "David", "Ethan", "Austin", "Adam", "Blake", "Caleb", "Daniel", "Evan", "Andrew", "Anthony", "Alexander", "Asher" };
+        var namesAE_Female = new[] { "Alice", "Bella", "Chloe", "Daisy", "Emma", "Eva", "Amelia", "Ava", "Charlotte", "Ella", "Emily", "Abigail", "Aria", "Aurora", "Brooklyn" };
 
         // Toddler 1 (13-24m): F-J
-        var namesFJ_First = new[] { "Frank", "Fiona", "George", "Grace", "Henry", "Hannah", "Isaac", "Ivy", "Jack", "Julia", "Finn", "Faith", "Gabriel", "Gavin", "Hazel" };
+        var namesFJ_Male = new[] { "Frank", "George", "Henry", "Isaac", "Jack", "Finn", "Gabriel", "Gavin", "James", "Jacob", "Julian", "Jackson", "Jayden", "Joseph", "Joshua" };
+        var namesFJ_Female = new[] { "Fiona", "Grace", "Hannah", "Ivy", "Julia", "Faith", "Hazel", "Isabella", "Harper", "Gianna", "Gabriella", "Hailey", "Isla", "Jasmine", "Jocelyn" };
 
         // Toddler 2 (25-36m): K-O
-        var namesKO_First = new[] { "Kevin", "Kate", "Liam", "Lily", "Mike", "Mia", "Noah", "Nora", "Oliver", "Olivia", "Kyle", "Kayla", "Leo", "Lucas", "Owen" };
+        var namesKO_Male = new[] { "Kevin", "Liam", "Mike", "Noah", "Oliver", "Kyle", "Leo", "Lucas", "Owen", "Logan", "Mason", "Matthew", "Nathan", "Nicholas", "Nolan" };
+        var namesKO_Female = new[] { "Kate", "Lily", "Mia", "Nora", "Olivia", "Kayla", "Maya", "Natalie", "Naomi", "Nicole", "Madelyn", "Maria", "Melanie", "Mackenzie", "Katherine" };
 
         // Pre-K 1 (37-48m): P-T
-        var namesPT_First = new[] { "Paul", "Penelope", "Quinn", "Quincy", "Ryan", "Riley", "Sam", "Sophia", "Tom", "Thea", "Peter", "Parker", "Rose", "Robert", "Tyler" };
+        var namesPT_Male = new[] { "Paul", "Quinn", "Ryan", "Sam", "Tom", "Peter", "Parker", "Robert", "Tyler", "Patrick", "Preston", "Richard", "Samuel", "Sebastian", "Thomas" };
+        var namesPT_Female = new[] { "Penelope", "Quincy", "Riley", "Sophia", "Thea", "Rose", "Peyton", "Piper", "Quinn", "Ruby", "Reagan", "Sarah", "Scarlett", "Stella", "Taylor" };
 
         // Pre-K 2 (49-60m): U-Z
-        var namesUZ_First = new[] { "Ursula", "Uriel", "Victor", "Violet", "Will", "Willow", "Xander", "Xyla", "Yusuf", "Yara", "Zach", "Zoe", "Uriah", "Vincent", "Wyatt" };
+        var namesUZ_Male = new[] { "Uriel", "Victor", "Will", "Xander", "Yusuf", "Zach", "Uriah", "Vincent", "Wyatt", "William", "Wesley", "Xavier", "Zane", "Zion", "Zachary" };
+        var namesUZ_Female = new[] { "Ursula", "Violet", "Willow", "Xyla", "Yara", "Zoe", "Vanessa", "Victoria", "Vivian", "Valentina", "Willa", "Winter", "Zara", "Zaria", "Zuri" };
 
         int ageMonths = random.Next(minAgeMonths, maxAgeMonths + 1);
         var dob = DateTime.Now.AddMonths(-ageMonths);
         
         var classroom = classrooms.FirstOrDefault(c => ageMonths >= c.MinAgeMonths && ageMonths <= c.MaxAgeMonths);
 
+        bool isMale = random.Next(2) == 0;
+        string gender = isMale ? "Male" : "Female";
         string firstName = "Test";
 
-        if (minAgeMonths <= 11) firstName = namesAE_First[random.Next(namesAE_First.Length)];
-        else if (minAgeMonths <= 24) firstName = namesFJ_First[random.Next(namesFJ_First.Length)];
-        else if (minAgeMonths <= 36) firstName = namesKO_First[random.Next(namesKO_First.Length)];
-        else if (minAgeMonths <= 47) firstName = namesPT_First[random.Next(namesPT_First.Length)];
-        else firstName = namesUZ_First[random.Next(namesUZ_First.Length)];
+        if (minAgeMonths <= 11) 
+            firstName = isMale ? namesAE_Male[random.Next(namesAE_Male.Length)] : namesAE_Female[random.Next(namesAE_Female.Length)];
+        else if (minAgeMonths <= 24) 
+            firstName = isMale ? namesFJ_Male[random.Next(namesFJ_Male.Length)] : namesFJ_Female[random.Next(namesFJ_Female.Length)];
+        else if (minAgeMonths <= 36) 
+            firstName = isMale ? namesKO_Male[random.Next(namesKO_Male.Length)] : namesKO_Female[random.Next(namesKO_Female.Length)];
+        else if (minAgeMonths <= 47) 
+            firstName = isMale ? namesPT_Male[random.Next(namesPT_Male.Length)] : namesPT_Female[random.Next(namesPT_Female.Length)];
+        else 
+            firstName = isMale ? namesUZ_Male[random.Next(namesUZ_Male.Length)] : namesUZ_Female[random.Next(namesUZ_Female.Length)];
 
         return new Child
         {
             FirstName = firstName,
             LastName = lastName, // Match family name
+            Gender = gender,
             DateOfBirth = dob,
             Parents = parents, // Assign the couple
             ClassroomId = classroom?.Id

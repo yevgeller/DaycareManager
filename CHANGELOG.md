@@ -15,3 +15,4 @@ All notable changes to this project will be documented in this file.
 - Added classroom assignment to Child Edit page with age-appropriateness warnings.
 - Refined "Edit Child" page header for better usability.
 - Added detailed age display (X years Y months) to Child Details and Edit pages.
+- Improved "Edit Classroom" page: consolidated age inputs into read-only labels and added a list of assigned children.

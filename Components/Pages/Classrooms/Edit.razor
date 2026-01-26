@@ -18,7 +18,7 @@
 else
 {
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <EditForm Model="Classroom" OnValidSubmit="UpdateClassroom" FormName="editClassroom" Enhance>
                 <DataAnnotationsValidator />
                 <ValidationSummary class="text-danger" />
@@ -30,16 +30,15 @@ else
                     <ValidationMessage For="() => Classroom.ClassroomNumber" class="text-danger" />
                 </div>
                 
-                <div class="mb-3">
-                    <label for="minAge" class="form-label">Min Age (Months)</label>
-                    <InputNumber id="minAge" class="form-control" @bind-Value="Classroom.MinAgeMonths" />
-                    <ValidationMessage For="() => Classroom.MinAgeMonths" class="text-danger" />
-                </div>
-                
-                <div class="mb-3">
-                    <label for="maxAge" class="form-label">Max Age (Months)</label>
-                    <InputNumber id="maxAge" class="form-control" @bind-Value="Classroom.MaxAgeMonths" />
-                    <ValidationMessage For="() => Classroom.MaxAgeMonths" class="text-danger" />
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label fw-bold">Minimum Age: @Classroom.MinAgeMonths months</label>
+                        <InputNumber @bind-Value="Classroom.MinAgeMonths" hidden />
+                    </div>
+                    <div class="col">
+                        <label class="form-label fw-bold">Maximum Age: @Classroom.MaxAgeMonths months</label>
+                        <InputNumber @bind-Value="Classroom.MaxAgeMonths" hidden />
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -48,9 +47,46 @@ else
                     <ValidationMessage For="() => Classroom.Capacity" class="text-danger" />
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="/classrooms" class="btn btn-secondary">Back to List</a>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="/classrooms" class="btn btn-secondary">Back to List</a>
+                </div>
             </EditForm>
+        </div>
+    </div>
+
+    <hr class="my-4"/>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Assigned Children (@Classroom.Children.Count)</h3>
+            
+            @if (Classroom.Children.Any())
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var child in Classroom.Children)
+                        {
+                            <tr>
+                                <td>@child.FirstName @child.LastName</td>
+                                <td>@child.AgeDescription</td>
+                                <td><a href="/children/edit/@child.Id">Edit</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">No children currently assigned to this classroom.</p>
+            }
         </div>
     </div>
 }
@@ -66,7 +102,9 @@ else
     {
         if (Classroom is null)
         {
-            Classroom = await DbContext.Classrooms.FirstOrDefaultAsync(m => m.Id == Id);
+            Classroom = await DbContext.Classrooms
+                .Include(c => c.Children)
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Classroom is null)
             {

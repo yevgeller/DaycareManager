@@ -14,4 +14,6 @@ public class Classroom
 
     [Range(1, 100)]
     public int Capacity { get; set; }
+
+    public List<Child> Children { get; set; } = new();
 }

@@ -119,6 +119,7 @@ public static class DbInitializer
                 currentAgeGroup = (currentAgeGroup + 1) % 5; 
             }
             familyIndex++;
+            //test change
         }
 
         context.Children.AddRange(children);
